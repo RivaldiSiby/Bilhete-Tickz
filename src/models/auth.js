@@ -1,5 +1,6 @@
 // const { body } = require("express-validator");
 // import { nanoid } from 'https://cdn.jsdelivr.net/npm/nanoid/nanoid.js'
+const { ErrorHandler } = require("../middlewares/errorHandler");
 const { v4: uuidV4 } = require("uuid");
 const db = require("../config/db");
 
@@ -38,9 +39,9 @@ const getPassByUserEmail = async (email) => {
     const sqlQuery = "SELECT * FROM users WHERE email = $1";
     const result = await db.query(sqlQuery, [email]);
     // cek apakah ada pass
-    if (result.rowCount === 0)
-      throw { status: 400, err: { msg: "Email is not registered" } };
-    return result.rows[0];
+    if (result.rowCount === 0) {
+      throw new ErrorHandler({ status: 400, message: "Email is not registered" });
+    }
   } catch (error) {
     const { status = 500, err } = error;
     throw { status, err };
