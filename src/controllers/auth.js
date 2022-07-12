@@ -69,6 +69,7 @@ auth.signIn = async (req, res) => {
   } catch (error) {
     // console.log(error)
     const { status = 500, message } = error;
+    console.log(status)
     isError(res, status, { msg: message });
   }
 };
