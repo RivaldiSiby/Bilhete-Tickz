@@ -11,6 +11,7 @@ const db = require("./src/config/db");
 
 // config cloudinary
 const cloudinaryConfig = require("./src/middlewares/cloudinary");
+//redis
 const redis = require("./src/config/redis");
 
 // middleware
@@ -37,7 +38,7 @@ const init = async () => {
     app.use("*", cloudinaryConfig);
     //   cors
     const corsOptions = {
-      origin: ["http://localhost:3000", "https://bilhete-tickz.vercel.app/"],
+      origin: ["http://localhost:3000", "https://bilhete-tickz.vercel.app"],
       methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS", "PUT"],
       allowedHeaders: ["Content-Type", "Authorization"],
     };
