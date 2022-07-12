@@ -11,6 +11,7 @@ const db = require("./src/config/db");
 
 // config cloudinary
 const cloudinaryConfig = require("./src/middlewares/cloudinary");
+//redis
 const redis = require("./src/config/redis");
 
 // middleware

@@ -211,10 +211,23 @@ const getHistoryTransactionUsers = (id) => {
 
 const getDashboard = (query) => {
   return new Promise((resolve, reject) => {
-    const { created_at } = query
-    const sqlQuery =
-      "select payments.created_at, sum(payments.total) as revenue, movies.name from payments join showtimes on payments.showtimes_id = showtimes.id join movies on showtimes.movies_id = movies.id where payments.created_at > now() - interval '1 $1' group by movies.name, payments.id order by movies.name asc";
-    db.query(sqlQuery, [created_at])
+    const { created_at, id } = query
+    let sqlQuery =
+      "select payments.created_at, sum(payments.total) as revenue, movies.name from payments join showtimes on payments.showtimes_id = showtimes.id join movies on showtimes.movies_id = movies.id where payments.created_at > now() - interval";
+      if (created_at === 'week') {
+        sqlQuery += " '1 week' and movies.id = $1 group by movies.name, payments.id order by movies.name asc";
+      }
+      if (created_at === 'month') {
+        sqlQuery += " '1 month' and movies.id = $1 group by movies.name, payments.id order by movies.name asc";
+      }
+      if (created_at === 'year') {
+        sqlQuery += " '1 year' and movies.id = $1 group by movies.name, payments.id order by movies.name asc";
+      }
+
+      if (created_at === 'day') {
+        sqlQuery += " '1 day' and movies.id = $1 group by movies.name, payments.id order by movies.name asc";
+      }
+    db.query(sqlQuery, [id])
       .then((result) => {
         const response = {
           total: result.rowCount,
