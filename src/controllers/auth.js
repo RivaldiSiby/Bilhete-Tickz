@@ -4,7 +4,10 @@ const jwt = require("jsonwebtoken");
 const { register, getPassByUserEmail, verifyEmail } = require("../models/auth");
 const { isSuccessHaveData, isError } = require("../helper/response");
 const { client } = require("../config/redis.js");
-const { sendConfirmationEmail, sendPasswordConfirmation } = require("../config/nodemailer");
+const {
+  sendConfirmationEmail,
+  sendPasswordConfirmation,
+} = require("../config/nodemailer");
 const generator = require("generate-password");
 
 const auth = {};
@@ -21,10 +24,19 @@ auth.register = (req, res) => {
     .then((hashedPassword) => {
       register(email, hashedPassword, created_at)
         .then(async ({ data }) => {
-          const token = jwt.sign({ email: data.email }, process.env.JWT_SECRET_CONFIRM_KEY, { expiresIn: "1h" });
+          const token = jwt.sign(
+            { email: data.email },
+            process.env.JWT_SECRET_CONFIRM_KEY,
+            { expiresIn: "1h" }
+          );
           await client.set(`jwt${data.email}`, token);
           await sendConfirmationEmail(data.email, data.email, token);
-          isSuccessHaveData(res, 201, { msg: "Register Success, Please Check email for verification" }, null);
+          isSuccessHaveData(
+            res,
+            201,
+            { msg: "Register Success, Please Check email for verification" },
+            null
+          );
         })
         .catch((error) => {
           console.log(error);
@@ -47,7 +59,9 @@ auth.signIn = async (req, res) => {
     // cek kecocokan email dan pass di db
     const data = await getPassByUserEmail(email);
     if (data.status !== "active") {
-      return isError(res, 403, { msg: "Pending Account. Please Verify Your Email" });
+      return isError(res, 403, {
+        msg: "Pending Account. Please Verify Your Email",
+      });
     }
     const result = await bcrypt.compare(password, data.password);
     if (!result) return isError(res, 400, { msg: "Email or Password wrong !" });
@@ -65,11 +79,16 @@ auth.signIn = async (req, res) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, jwtOptions);
     await client.set(`jwt${data.id}`, token);
     // return
-    isSuccessHaveData(res, 200, { id: data.id, email, token, roles: data.roles }, null);
+    isSuccessHaveData(
+      res,
+      200,
+      { id: data.id, email, token, roles: data.roles },
+      null
+    );
   } catch (error) {
     // console.log(error)
     const { status = 500, message } = error;
-    console.log(status)
+    console.log(status);
     isError(res, status, { msg: message });
   }
 };
@@ -80,7 +99,12 @@ auth.logout = async (req, res) => {
     if (cachedLogin) {
       await client.del(`jwt${req.userPayload.id}`);
     }
-    isSuccessHaveData(res, 200, { message: "You have successfully logged out" }, null);
+    isSuccessHaveData(
+      res,
+      200,
+      { message: "You have successfully logged out" },
+      null
+    );
   } catch (err) {
     isError(res, 500, err.message);
   }
@@ -96,7 +120,7 @@ auth.confirmEmail = async (req, res) => {
       message: "Your Email has been verified. Please Login",
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     const status = err.status ? err.status : 500;
     res.status(status).json({
       error: err.message,

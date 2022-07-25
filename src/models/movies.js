@@ -11,7 +11,7 @@ const getCinemas = async (location) => {
   } catch (error) {
     throw error;
   }
-}
+};
 const postMovies = async (body, img) => {
   try {
     const id = uuidV4();
@@ -73,7 +73,7 @@ const getMovies = async (query, upcoming = false, nowshow = false) => {
       countFilter += 1;
       if (queryArray.length === 1) {
         textQuery += `${
-          upcoming === true ? " AND" : ""
+          upcoming === true || nowshow === true ? " AND" : ""
         } lower(${item}) LIKE lower('%' || $${countFilter} || '%') `;
         return;
       }
