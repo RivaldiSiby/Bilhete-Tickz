@@ -97,7 +97,7 @@ const getMovies = async (query, upcoming = false, nowshow = false) => {
       }
     }
     const date = new Date();
-    const nowDate = `${date.getMonth()}/${
+    const nowDate = `${date.getMonth() + 1}/${
       date.getDate() + 1
     }/${date.getFullYear()}`;
     const sqlQuery = "select id,name,category,img,release_date from movies ";
